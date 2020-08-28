@@ -1,0 +1,2 @@
+# MyFavouritePlaces
+Challenge from SOSAFE
