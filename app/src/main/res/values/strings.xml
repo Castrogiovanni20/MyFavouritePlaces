@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">MyFavouritePlaces</string>
-    <string name="endpoint">https://maps.googleapis.com/maps/api/place/nearbysearch/json</string>
     <string name="google_map_key">AIzaSyA1FCxkLauotf6_hGH4V7kCpcDhmI5BCjs</string>
 </resources>

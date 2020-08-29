@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -20,11 +21,14 @@ import android.location.Location;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,13 +46,15 @@ import java.net.URL;
 import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     // Initialize variable
+    final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private EditText editText;
     private Button btnSearch;
     private SupportMapFragment supportMapFragment;
-    private GoogleMap map;
+    private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLat = 0, currentLong = 0;
 
@@ -77,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = getResources().getString(R.string.endpoint) + "?location=" + currentLat + "," + currentLong
+                String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
                                                                          + "&radius=5000"
                                                                          + "&keyword=" + editText.getText()
                                                                          + "&key=" + getResources().getString(R.string.google_map_key);
@@ -87,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * @description Get current location and posicionate map on fragment
+     */
     private void getCurrentLocation() {
         // Initialize task location
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
@@ -100,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
                     supportMapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
-                            map = googleMap;
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(currentLat, currentLong), 10
+                            mMap = googleMap;
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(currentLat, currentLong), 12
                             ));
                         }
                     });
@@ -111,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @description Request permissions to user
+     * @param grantResults Result of request
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -121,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @description Inner class for download data from HTTP
+     */
     private class PlaceTask extends AsyncTask<String,Integer,String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -139,6 +156,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @description Download data
+     * @param string URL
+     * @return String da
+     * @throws IOException
+     */
     private String downloadUrl(String string) throws IOException {
         URL url = new URL(string);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -157,6 +180,9 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
 
+    /**
+     * @description Inner class to parser json object
+     */
     private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String,String>>>{
         @Override
         protected List<HashMap<String, String>> doInBackground(String... strings) {
@@ -176,19 +202,58 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
-            map.clear();
-            for(int i=0; i<hashMaps.size(); i++){
-                HashMap<String,String> hashMapList = hashMaps.get(i);
-                double lat = Double.parseDouble(hashMapList.get("lat"));
-                double lng = Double.parseDouble(hashMapList.get("lng"));
-                String name = hashMapList.get("name");
-
-                LatLng latLng = new LatLng(lat, lng);
-                MarkerOptions options = new MarkerOptions();
-                options.position(latLng);
-                options.title(name);
-                map.addMarker(options);
-            }
+            mMap.clear();
+            onMapReady(mMap, hashMaps);
         }
     }
+
+    public void onMapReady(GoogleMap googleMap, final List<HashMap<String, String>> hashMaps){
+        mMap = googleMap;
+
+        for(int i=0; i<hashMaps.size(); i++){
+            HashMap<String,String> hashMapList = hashMaps.get(i);
+            double lat = Double.parseDouble(hashMapList.get("lat"));
+            double lng = Double.parseDouble(hashMapList.get("lng"));
+            String name = hashMapList.get("name");
+
+            LatLng latLng = new LatLng(lat, lng);
+            MarkerOptions options = new MarkerOptions();
+            options.position(latLng);
+            options.title(name);
+            mMap.addMarker(options);
+
+        }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                HashMap<String, String> dataMarker = new HashMap<>();
+                String markerTitle = marker.getTitle();
+                double markerLat = 0, markerLong = 0;
+
+                for(int i=0; i<hashMaps.size(); i++){
+                    String hashMapTitle = hashMaps.get(i).get("name");
+                    markerLat = Double.parseDouble(hashMaps.get(i).get("lat"));
+                    markerLong = Double.parseDouble(hashMaps.get(i).get("lng"));
+
+                    if (hashMapTitle.equalsIgnoreCase(markerTitle)){
+                        dataMarker.put("name", hashMapTitle);
+                        dataMarker.put("lat", hashMaps.get(i).get("lat"));
+                        dataMarker.put("lng",hashMaps.get(i).get("lng"));
+                        dataMarker.put("address", hashMaps.get(i).get("address"));
+                        dataMarker.put("photo_reference", hashMaps.get(i).get("photo_reference"));
+                        dataMarker.put("rating", hashMaps.get(i).get("rating"));
+                    }
+                }
+
+                Intent intent = new Intent(getApplicationContext(), PlaceDetails.class);
+                intent.putExtra("place", dataMarker);
+                startActivity(intent);
+
+                return false;
+            }
+        });
+    }
+
+
 }
