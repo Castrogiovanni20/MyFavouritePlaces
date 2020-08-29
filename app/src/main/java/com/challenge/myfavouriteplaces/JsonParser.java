@@ -15,6 +15,7 @@ public class JsonParser {
         HashMap<String, String> placeData = new HashMap<>();
         try {
             String photo_reference = null;
+            String id = objectPlace.getString("place_id");
             String name = objectPlace.getString("name");
             String address = objectPlace.getString("vicinity");
             String rating = objectPlace.getString("rating");
@@ -28,6 +29,7 @@ public class JsonParser {
                 }
             }
 
+            placeData.put("id", id);
             placeData.put("name", name);
             placeData.put("lat", latitude);
             placeData.put("lng", longitude);

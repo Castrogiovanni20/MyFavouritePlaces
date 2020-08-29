@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     // Initialize variable
     final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private EditText editText;
-    private Button btnSearch;
+    private Button btnSearch, btnFavourite;
     private SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         // Assign variable
         editText = findViewById(R.id.text);
         btnSearch = findViewById(R.id.button);
+        btnFavourite = findViewById(R.id.favourite);
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
 
@@ -88,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
                                                                          + "&keyword=" + editText.getText()
                                                                          + "&key=" + getResources().getString(R.string.google_map_key);
                 new PlaceTask().execute(url);
+            }
+        });
+
+        btnFavourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), FavouritePlaces.class);
+                startActivity(intent);
             }
         });
 
@@ -159,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * @description Download data
      * @param string URL
-     * @return String da
+     * @return Data of places
      * @throws IOException
      */
     private String downloadUrl(String string) throws IOException {
@@ -237,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     markerLong = Double.parseDouble(hashMaps.get(i).get("lng"));
 
                     if (hashMapTitle.equalsIgnoreCase(markerTitle)){
+                        dataMarker.put("id", hashMaps.get(i).get("id"));
                         dataMarker.put("name", hashMapTitle);
                         dataMarker.put("lat", hashMaps.get(i).get("lat"));
                         dataMarker.put("lng",hashMaps.get(i).get("lng"));
