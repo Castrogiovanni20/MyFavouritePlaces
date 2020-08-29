@@ -35,7 +35,6 @@ public class FavouritePlaces extends AppCompatActivity {
         // Initialize ArrayAdapter
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList);
 
-
         // Set ArrayAdapter to ListView
         listView.setAdapter(arrayAdapter);
 

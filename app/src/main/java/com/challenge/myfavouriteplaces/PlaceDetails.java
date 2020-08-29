@@ -30,12 +30,13 @@ public class PlaceDetails extends AppCompatActivity {
     final private String ENDPOINT_PHOTO = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400";
     private TextView txtName, txtAddress, txtRating;
     private ImageView imgPhoto;
-    private Button btnSave;
+    private Button btnSave, btnDelete;
     private String photo_reference = null;
     private String rating = null;
     private SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
     private DatabaseHandler databaseHandler;
+    private ArrayList arrayListPlaces;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class PlaceDetails extends AppCompatActivity {
         Intent intent = getIntent();
         HashMap<String, String> hashMapPlace = (HashMap<String, String>)intent.getSerializableExtra("place");
 
-        final String id = hashMapPlace.get("id");
+        final String place_id = hashMapPlace.get("place_id");
         final String name = hashMapPlace.get("name");
         final double lat = Double.parseDouble(hashMapPlace.get("lat"));
         final double lng = Double.parseDouble(hashMapPlace.get("lng"));
@@ -64,6 +65,7 @@ public class PlaceDetails extends AppCompatActivity {
         txtRating = findViewById(R.id.rating);
         imgPhoto = findViewById(R.id.photo);
         btnSave = findViewById(R.id.save);
+        btnDelete = findViewById(R.id.delete);
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
 
@@ -85,7 +87,7 @@ public class PlaceDetails extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean isInserted = databaseHandler.addPlace(id,name,address,rating,photo_reference);
+                boolean isInserted = databaseHandler.addPlace(place_id,name,address,rating,photo_reference);
                 if (isInserted == true){
                     Toast.makeText(PlaceDetails.this, "Place saved successfully", Toast.LENGTH_SHORT).show();
                 } else {
@@ -94,6 +96,24 @@ public class PlaceDetails extends AppCompatActivity {
 
             }
         });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                databaseHandler.deletePlaceByPlaceID(place_id);
+                Toast.makeText(PlaceDetails.this, "Place deleted successfully", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        arrayListPlaces = databaseHandler.getPlaceByIDPlace(place_id);
+
+        if (!arrayListPlaces.isEmpty()){
+            btnSave.setVisibility(View.GONE);
+            btnDelete.setVisibility(View.VISIBLE);
+        } else {
+            btnDelete.setVisibility(View.GONE);
+        }
+
     }
 
     /**

@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class MainActivity extends AppCompatActivity {
     // Initialize variable
     final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                     markerLong = Double.parseDouble(hashMaps.get(i).get("lng"));
 
                     if (hashMapTitle.equalsIgnoreCase(markerTitle)){
-                        dataMarker.put("id", hashMaps.get(i).get("id"));
+                        dataMarker.put("place_id", hashMaps.get(i).get("place_id"));
                         dataMarker.put("name", hashMapTitle);
                         dataMarker.put("lat", hashMaps.get(i).get("lat"));
                         dataMarker.put("lng",hashMaps.get(i).get("lng"));

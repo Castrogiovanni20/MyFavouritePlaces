@@ -22,7 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create table
-        String createTable = "create table " + TABLE_NAME + " (id INTEGER PRIMARY KEY, id_place TEXT,name TEXT, address TEXT, rating TEXT, photo TEXT)";
+        String createTable = "create table " + TABLE_NAME + " (id INTEGER PRIMARY KEY, place_id TEXT,name TEXT, address TEXT, rating TEXT, photo TEXT)";
         db.execSQL(createTable);
     }
 
@@ -33,11 +33,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addPlace(String id, String name, String address, String rating, String photo){
+    public boolean addPlace(String place_id, String name, String address, String rating, String photo){
         // Get data from DB and insert data in table
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("id_place", id);
+        contentValues.put("place_id", place_id);
         contentValues.put("name", name);
         contentValues.put("address", address);
         contentValues.put("rating", rating);
@@ -49,7 +49,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } else {
             return true;
         }
+    }
 
+    public void deletePlaceByPlaceID(String place_id){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        sqLiteDatabase.execSQL("DELETE FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'");
+        sqLiteDatabase.close();
     }
 
     public ArrayList getAllPlaces(){
@@ -60,7 +65,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()){
-            arrayList.add(cursor.getString(cursor.getColumnIndex("id_place")));
+            arrayList.add(cursor.getString(cursor.getColumnIndex("place_id")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("name")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("address")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("rating")));
@@ -70,15 +75,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return arrayList;
     }
 
-    public ArrayList getPlaceByIDPlace(String id_place){
+    public ArrayList getPlaceByIDPlace(String place_id){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         ArrayList<String> arrayList = new ArrayList<String>();
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE id_place=" + id_place, null);
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'", null);
 
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()){
-            arrayList.add(cursor.getString(cursor.getColumnIndex("id_place")));
+            arrayList.add(cursor.getString(cursor.getColumnIndex("place_id")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("name")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("address")));
             arrayList.add(cursor.getString(cursor.getColumnIndex("rating")));
