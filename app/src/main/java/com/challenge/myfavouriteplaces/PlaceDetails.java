@@ -2,6 +2,7 @@ package com.challenge.myfavouriteplaces;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +44,8 @@ public class PlaceDetails extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_placedetails);
+
+        getSupportActionBar().setTitle("Details of place");
 
         final Place place = (Place) getIntent().getSerializableExtra("place");
 
@@ -88,9 +91,20 @@ public class PlaceDetails extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Handler mHandler = new Handler();
                 boolean isInserted = databaseHandler.addPlace(place);
+
                 if (isInserted == true){
+
                     Toast.makeText(PlaceDetails.this, "Place saved successfully", Toast.LENGTH_SHORT).show();
+
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(PlaceDetails.this, FavouritePlaces.class);
+                            startActivity(intent);
+                        }
+                    }, 1500);
                 } else {
                     Toast.makeText(PlaceDetails.this, "Error, place not saved", Toast.LENGTH_SHORT).show();
                 }
@@ -101,8 +115,18 @@ public class PlaceDetails extends AppCompatActivity {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Handler mHandler = new Handler();
                 databaseHandler.deletePlaceByPlaceID(place_id);
+
                 Toast.makeText(PlaceDetails.this, "Place deleted successfully", Toast.LENGTH_SHORT).show();
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(PlaceDetails.this, FavouritePlaces.class);
+                        startActivity(intent);
+                    }
+                }, 1500);
             }
         });
 
