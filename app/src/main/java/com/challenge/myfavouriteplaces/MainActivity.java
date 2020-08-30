@@ -17,8 +17,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -49,6 +51,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     // Initialize variable
     final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+    private LottieAnimationView animation;
     private AHBottomNavigation bottomNavigation;
     private EditText editText;
     private ImageView imgSearch;
@@ -93,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
         bottomNavigation.setCurrentItem(0);
 
+        animation = findViewById(R.id.animationView);
+        animation.playAnimation();
+
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
@@ -110,14 +116,26 @@ public class MainActivity extends AppCompatActivity {
         imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                if (!editText.getText().toString().isEmpty()){
+                    animation.setVisibility(View.VISIBLE);
 
-                String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
-                                                    + "&radius=5000"
-                                                    + "&keyword=" + editText.getText()
-                                                    + "&key=" + getResources().getString(R.string.google_map_key);
-                new PlaceTask().execute(url);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+
+                    String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
+                            + "&radius=5000"
+                            + "&keyword=" + editText.getText()
+                            + "&key=" + getResources().getString(R.string.google_map_key);
+
+                    editText.setText("");
+
+                    new PlaceTask().execute(url);
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Please enter a word", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
     }
@@ -182,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             new ParserTask().execute(s);
+            animation.setVisibility(View.GONE);
         }
     }
 

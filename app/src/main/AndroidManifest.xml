@@ -20,12 +20,18 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"/>
+
+        <activity android:name=".SplashScreen"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".PlaceDetails"/>
         <activity android:name=".FavouritePlaces"/>
         <activity android:name=".CustomAdapter"/>
