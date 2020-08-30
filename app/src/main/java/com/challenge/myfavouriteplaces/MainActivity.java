@@ -10,27 +10,20 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.location.Location;
 
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -43,10 +36,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -86,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
-                                                                         + "&radius=5000"
-                                                                         + "&keyword=" + editText.getText()
-                                                                         + "&key=" + getResources().getString(R.string.google_map_key);
+                                                    + "&radius=5000"
+                                                    + "&keyword=" + editText.getText()
+                                                    + "&key=" + getResources().getString(R.string.google_map_key);
                 new PlaceTask().execute(url);
             }
         });
@@ -193,11 +184,11 @@ public class MainActivity extends AppCompatActivity {
     /**
      * @description Inner class to parser json object
      */
-    private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String,String>>>{
+    private class ParserTask extends AsyncTask<String, Integer, List<Place>> {
         @Override
-        protected List<HashMap<String, String>> doInBackground(String... strings) {
+        protected List<Place> doInBackground(String... strings) {
             JsonParser jsonParser = new JsonParser();
-            List<HashMap<String,String>> mapList = null;
+            List<Place> mapList = null;
             JSONObject object = null;
 
             try {
@@ -211,54 +202,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
+        protected void onPostExecute(List<Place> arrayPlaces) {
             mMap.clear();
-            onMapReady(mMap, hashMaps);
+            onMapReady(mMap, arrayPlaces);
         }
     }
 
-    public void onMapReady(GoogleMap googleMap, final List<HashMap<String, String>> hashMaps){
+    public void onMapReady(GoogleMap googleMap, final List<Place> places){
         mMap = googleMap;
 
-        for(int i=0; i<hashMaps.size(); i++){
-            HashMap<String,String> hashMapList = hashMaps.get(i);
-            double lat = Double.parseDouble(hashMapList.get("lat"));
-            double lng = Double.parseDouble(hashMapList.get("lng"));
-            String name = hashMapList.get("name");
+        for(int i=0; i<places.size(); i++){
+            Place arrayPlaces = places.get(i);
+            double lat = arrayPlaces.getLat();
+            double lng = arrayPlaces.getLng();
+            String name = arrayPlaces.getName();
 
             LatLng latLng = new LatLng(lat, lng);
             MarkerOptions options = new MarkerOptions();
             options.position(latLng);
             options.title(name);
             mMap.addMarker(options);
-
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 HashMap<String, String> dataMarker = new HashMap<>();
+                Place place = new Place();
                 String markerTitle = marker.getTitle();
                 double markerLat = 0, markerLong = 0;
 
-                for(int i=0; i<hashMaps.size(); i++){
-                    String hashMapTitle = hashMaps.get(i).get("name");
-                    markerLat = Double.parseDouble(hashMaps.get(i).get("lat"));
-                    markerLong = Double.parseDouble(hashMaps.get(i).get("lng"));
+                for(int i=0; i<places.size(); i++){
+                    String hashMapTitle = places.get(i).getName();
+                    markerLat = places.get(i).getLat();
+                    markerLong = places.get(i).getLng();
 
                     if (hashMapTitle.equalsIgnoreCase(markerTitle)){
-                        dataMarker.put("place_id", hashMaps.get(i).get("place_id"));
-                        dataMarker.put("name", hashMapTitle);
-                        dataMarker.put("lat", hashMaps.get(i).get("lat"));
-                        dataMarker.put("lng",hashMaps.get(i).get("lng"));
-                        dataMarker.put("address", hashMaps.get(i).get("address"));
-                        dataMarker.put("photo_reference", hashMaps.get(i).get("photo_reference"));
-                        dataMarker.put("rating", hashMaps.get(i).get("rating"));
+                        place.setPlace_id(places.get(i).getPlace_id());
+                        place.setName(hashMapTitle);
+                        place.setLat(places.get(i).getLat());
+                        place.setLng(places.get(i).getLng());
+                        place.setAddress(places.get(i).getAddress());
+                        place.setPhoto(places.get(i).getPhoto());
+                        place.setRating(places.get(i).getRating());
                     }
                 }
 
                 Intent intent = new Intent(getApplicationContext(), PlaceDetails.class);
-                intent.putExtra("place", dataMarker);
+                intent.putExtra("place", place);
                 startActivity(intent);
 
                 return false;

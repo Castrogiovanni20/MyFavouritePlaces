@@ -22,7 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Create table
-        String createTable = "create table " + TABLE_NAME + " (id INTEGER PRIMARY KEY, place_id TEXT,name TEXT, address TEXT, rating TEXT, photo TEXT)";
+        String createTable = "create table " + TABLE_NAME + " (id INTEGER PRIMARY KEY, place_id TEXT,name TEXT, address TEXT, rating TEXT, photo TEXT, lat DOUBLE, lng DOUBLE)";
         db.execSQL(createTable);
     }
 
@@ -33,15 +33,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addPlace(String place_id, String name, String address, String rating, String photo){
+    public boolean addPlace(Place place){
         // Get data from DB and insert data in table
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("place_id", place_id);
-        contentValues.put("name", name);
-        contentValues.put("address", address);
-        contentValues.put("rating", rating);
-        contentValues.put("photo", photo);
+        contentValues.put("place_id", place.getPlace_id());
+        contentValues.put("name", place.getName());
+        contentValues.put("address", place.getAddress());
+        contentValues.put("rating", place.getRating());
+        contentValues.put("photo", place.getPhoto());
+        contentValues.put("lat", place.getLat());
+        contentValues.put("lng", place.getLng());
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
         if (result == -1){
@@ -63,7 +65,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                     cursor.getString(cursor.getColumnIndex("place_id")),
                                     cursor.getString(cursor.getColumnIndex("address")),
                                     cursor.getString(cursor.getColumnIndex("rating")),
-                                    cursor.getString(cursor.getColumnIndex("photo")));
+                                    cursor.getString(cursor.getColumnIndex("photo")),
+                                    cursor.getDouble(cursor.getColumnIndex("lat")),
+                                    cursor.getDouble(cursor.getColumnIndex("lng")));
             arrayPlaces.add(place);
             cursor.moveToNext();
 
@@ -73,20 +77,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public ArrayList getPlaceByIDPlace(String place_id){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        ArrayList<String> arrayList = new ArrayList<String>();
+        ArrayList<Place> arrayPlaces = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'", null);
 
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()){
-            arrayList.add(cursor.getString(cursor.getColumnIndex("place_id")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("name")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("address")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("rating")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("photo")));
+            Place place = new Place(cursor.getString(cursor.getColumnIndex("name")),
+                                    cursor.getString(cursor.getColumnIndex("place_id")),
+                                    cursor.getString(cursor.getColumnIndex("address")),
+                                    cursor.getString(cursor.getColumnIndex("rating")),
+                                    cursor.getString(cursor.getColumnIndex("photo")),
+                                    cursor.getDouble(cursor.getColumnIndex("lat")),
+                                    cursor.getDouble(cursor.getColumnIndex("lng")));
+            arrayPlaces.add(place);
             cursor.moveToNext();
         }
-        return arrayList;
+        return arrayPlaces;
     }
 
     public void deletePlaceByPlaceID(String place_id){

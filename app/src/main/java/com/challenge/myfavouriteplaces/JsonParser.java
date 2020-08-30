@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class JsonParser {
-    private HashMap<String,String> parserJsonObject(JSONObject objectPlace){
-        HashMap<String, String> placeData = new HashMap<>();
+    private Place parserJsonObject(JSONObject objectPlace){
+        Place place = new Place();
         try {
             String photo_reference = null;
             String place_id = objectPlace.getString("place_id");
@@ -29,35 +29,29 @@ public class JsonParser {
                 }
             }
 
-            placeData.put("place_id", place_id);
-            placeData.put("name", name);
-            placeData.put("lat", latitude);
-            placeData.put("lng", longitude);
-            placeData.put("address", address);
-            placeData.put("photo_reference", photo_reference);
-            placeData.put("rating", rating);
+            place = new Place(name, place_id, address, rating, photo_reference, Double.parseDouble(latitude), Double.parseDouble(longitude));
 
         } catch (JSONException e){
             e.printStackTrace();
         }
-        return placeData;
+        return place;
     }
 
 
-    private List<HashMap<String, String>> parseJsonArray(JSONArray jsonArray) throws JSONException {
-        List<HashMap<String,String>> dataList = new ArrayList<>();
+    private List<Place> parseJsonArray(JSONArray jsonArray) throws JSONException {
+        List<Place> arrayPlaces = new ArrayList<>();
         for(int i=0; i<jsonArray.length(); i++){
             try {
-                HashMap<String,String> data = parserJsonObject((JSONObject) jsonArray.get(i));
-                dataList.add(data);
+                Place place = parserJsonObject((JSONObject) jsonArray.get(i));
+                arrayPlaces.add(place);
             } catch (JSONException e){
                 e.printStackTrace();
             }
         }
-        return dataList;
+        return arrayPlaces;
     }
 
-    public List<HashMap<String, String>> parseResult(JSONObject object) throws JSONException {
+    public List<Place> parseResult(JSONObject object) throws JSONException {
         JSONArray jsonArray = null;
         try{
             jsonArray = object.getJSONArray("results");

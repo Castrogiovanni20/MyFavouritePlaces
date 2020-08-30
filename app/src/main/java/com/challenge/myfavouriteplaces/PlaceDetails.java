@@ -36,27 +36,27 @@ public class PlaceDetails extends AppCompatActivity {
     private SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
     private DatabaseHandler databaseHandler;
-    private ArrayList arrayListPlaces;
+    private ArrayList<Place> arrayListPlaces;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_placedetails);
-        Intent intent = getIntent();
-        HashMap<String, String> hashMapPlace = (HashMap<String, String>)intent.getSerializableExtra("place");
 
-        final String place_id = hashMapPlace.get("place_id");
-        final String name = hashMapPlace.get("name");
-        final double lat = Double.parseDouble(hashMapPlace.get("lat"));
-        final double lng = Double.parseDouble(hashMapPlace.get("lng"));
-        final String address = hashMapPlace.get("address");
+        final Place place = (Place) getIntent().getSerializableExtra("place");
 
-        if (hashMapPlace.get("rating") != null){
-            rating = hashMapPlace.get("rating");
+        final String place_id = place.getPlace_id();
+        final String name = place.getName();
+        final double lat = place.getLat();
+        final double lng = place.getLng();
+        final String address = place.getAddress();
+
+        if (place.getRating() != null){
+            rating = place.getRating();
         }
 
-        if (hashMapPlace.get("photo_reference") != null){
-            photo_reference = hashMapPlace.get("photo_reference");
+        if (place.getPhoto() != null){
+            photo_reference = place.getPhoto();
         }
 
         // Assign variables
@@ -87,7 +87,7 @@ public class PlaceDetails extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean isInserted = databaseHandler.addPlace(place_id,name,address,rating,photo_reference);
+                boolean isInserted = databaseHandler.addPlace(place);
                 if (isInserted == true){
                     Toast.makeText(PlaceDetails.this, "Place saved successfully", Toast.LENGTH_SHORT).show();
                 } else {

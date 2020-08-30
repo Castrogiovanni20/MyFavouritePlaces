@@ -18,9 +18,8 @@ public class FavouritePlaces extends AppCompatActivity {
     // Initialize variables
     private DatabaseHandler databaseHandler;
     private RecyclerView mRecyclerView;
-    private CustomAdapter customAdapter;
+    private CustomAdapter mCustomAdapter;
     private ArrayList<Place> places;
-    private ArrayList<Place> placesLimpios;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,9 +35,7 @@ public class FavouritePlaces extends AppCompatActivity {
 
         places = databaseHandler.getAllPlaces();
 
-        Log.d("TESTPLACES", "place: " + places.get(1).getName());
-
-        CustomAdapter mCustomAdapter = new CustomAdapter(FavouritePlaces.this, places);
+        mCustomAdapter = new CustomAdapter(FavouritePlaces.this, places);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mCustomAdapter);
 
