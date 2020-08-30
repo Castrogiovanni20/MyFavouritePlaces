@@ -20,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -64,8 +65,8 @@ public class PlaceDetails extends AppCompatActivity {
         txtAddress = findViewById(R.id.address);
         txtRating = findViewById(R.id.rating);
         imgPhoto = findViewById(R.id.photo);
-        btnSave = findViewById(R.id.save);
-        btnDelete = findViewById(R.id.delete);
+        btnSave = findViewById(R.id.btnSave);
+        btnDelete = findViewById(R.id.btnDelete);
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
 
@@ -108,10 +109,10 @@ public class PlaceDetails extends AppCompatActivity {
         arrayListPlaces = databaseHandler.getPlaceByIDPlace(place_id);
 
         if (!arrayListPlaces.isEmpty()){
-            btnSave.setVisibility(View.GONE);
+            btnSave.setVisibility(View.INVISIBLE);
             btnDelete.setVisibility(View.VISIBLE);
         } else {
-            btnDelete.setVisibility(View.GONE);
+            btnDelete.setVisibility(View.INVISIBLE);
         }
 
     }

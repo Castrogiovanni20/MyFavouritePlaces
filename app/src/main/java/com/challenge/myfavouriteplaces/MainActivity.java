@@ -7,14 +7,18 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,8 +47,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     // Initialize variable
     final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+    private AHBottomNavigation bottomNavigation;
     private EditText editText;
-    private Button btnSearch, btnFavourite;
+    private ImageView imgSearch;
     private SupportMapFragment supportMapFragment;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -57,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Assign variable
         editText = findViewById(R.id.text);
-        btnSearch = findViewById(R.id.button);
-        btnFavourite = findViewById(R.id.favourite);
+        imgSearch = findViewById(R.id.imgSearch);
+        bottomNavigation = findViewById(R.id.bottom_navigation);
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
 
@@ -73,7 +78,34 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
+        // Create items
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("Search", R.drawable.ic_search_black_24dp);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("Favorites", R.drawable.ic_favorite_black_24dp);
+
+        // Add items
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+
+        // Change colors
+        bottomNavigation.setAccentColor(Color.parseColor("#186c7d"));
+        bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
+        bottomNavigation.setCurrentItem(0);
+
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                switch (position) {
+                    case 0:
+                        return true;
+                    case 1:
+                        startActivity(new Intent(getApplicationContext(), FavouritePlaces.class));
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
@@ -83,15 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 new PlaceTask().execute(url);
             }
         });
-
-        btnFavourite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), FavouritePlaces.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
 
