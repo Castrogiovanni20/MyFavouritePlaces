@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".PlaceDetails"/>
         <activity android:name=".FavouritePlaces"/>
+        <activity android:name=".CustomAdapter"/>
+
     </application>
 
 </manifest>

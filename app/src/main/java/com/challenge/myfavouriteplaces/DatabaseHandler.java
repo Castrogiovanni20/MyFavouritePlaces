@@ -51,28 +51,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    public void deletePlaceByPlaceID(String place_id){
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        sqLiteDatabase.execSQL("DELETE FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'");
-        sqLiteDatabase.close();
-    }
-
     public ArrayList getAllPlaces(){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        ArrayList<String> arrayList = new ArrayList<String>();
+        ArrayList<Place> arrayPlaces = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()){
-            arrayList.add(cursor.getString(cursor.getColumnIndex("place_id")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("name")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("address")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("rating")));
-            arrayList.add(cursor.getString(cursor.getColumnIndex("photo")));
+            Place place = new Place(cursor.getString(cursor.getColumnIndex("name")),
+                                    cursor.getString(cursor.getColumnIndex("place_id")),
+                                    cursor.getString(cursor.getColumnIndex("address")),
+                                    cursor.getString(cursor.getColumnIndex("rating")),
+                                    cursor.getString(cursor.getColumnIndex("photo")));
+            arrayPlaces.add(place);
             cursor.moveToNext();
+
         }
-        return arrayList;
+        return arrayPlaces;
     }
 
     public ArrayList getPlaceByIDPlace(String place_id){
@@ -92,4 +88,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return arrayList;
     }
+
+    public void deletePlaceByPlaceID(String place_id){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        sqLiteDatabase.execSQL("DELETE FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'");
+        sqLiteDatabase.close();
+    }
+
+
 }

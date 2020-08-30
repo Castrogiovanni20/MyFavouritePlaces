@@ -7,18 +7,9 @@
     android:orientation="vertical"
     tools:context=".FavouritePlaces">
 
-    <TextView
-        android:id="@+id/name"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hi all"
-        android:textColor="@android:color/black"/>
-
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"/>
-
+        android:layout_height="match_parent" />
 </LinearLayout>
 
