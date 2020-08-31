@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.PlacesViewHolder> {
-
+    // Initialize variable
     private Context context;
     private ArrayList<Place>placeArrayList;
 
@@ -35,6 +35,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.PlacesView
         return new PlacesViewHolder(view);
     }
 
+
+    /**
+     * @description Bind object in viewHolder
+     * @param holder
+     * @param i
+     */
     @Override
     public void onBindViewHolder(@NonNull PlacesViewHolder holder, final int i) {
         final Place place = new Place(placeArrayList.get(i).getName(),
@@ -68,6 +74,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.PlacesView
         TextView txtName;
         Button btnDetails;
 
+        /**
+         * Constructor of PlacesViewHolder
+         * @param itemView
+         */
         public PlacesViewHolder(View itemView) {
             super(itemView);
             txtName = itemView.findViewById(R.id.name);

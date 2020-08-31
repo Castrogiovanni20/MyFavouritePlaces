@@ -11,6 +11,7 @@ import android.view.View;
 import com.airbnb.lottie.LottieAnimationView;
 
 public class SplashScreen extends AppCompatActivity {
+    // Initialize variable
     private LottieAnimationView animation;
 
     @Override
@@ -18,6 +19,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
 
+        // Set animation
         animation = findViewById(R.id.animationView);
         animation.playAnimation();
 

@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+def GOOGLE_MAP_API_KEY = '"' + GOOGLE_MAP_API_KEY + '"'?: '"Error message"'
+def STRING = 'String'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
@@ -12,9 +15,18 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        each{
+            type -> type.buildConfigField STRING, 'GOOGLE_MAP_API_KEY', GOOGLE_MAP_API_KEY
+        }
+        manifestPlaceholders = [
+                GOOGLE_MAP_API_KEY : GOOGLE_MAP_API_KEY
+        ]
     }
 
     buildTypes {
+        debug {
+            resValue "string", "GOOGLE_MAP_API_KEY", GOOGLE_MAP_API_KEY
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class JsonParser {
+    /**
+     * @description Parse json object and instantiate place object
+     * @param objectPlace
+     * @return
+     */
     private Place parserJsonObject(JSONObject objectPlace){
         Place place = new Place();
         try {
@@ -38,6 +43,12 @@ public class JsonParser {
     }
 
 
+    /**
+     * @description Parse Array of places
+     * @param jsonArray
+     * @return
+     * @throws JSONException
+     */
     private List<Place> parseJsonArray(JSONArray jsonArray) throws JSONException {
         List<Place> arrayPlaces = new ArrayList<>();
         for(int i=0; i<jsonArray.length(); i++){
@@ -51,6 +62,13 @@ public class JsonParser {
         return arrayPlaces;
     }
 
+
+    /**
+     * @description Parse result and return array of places
+     * @param object
+     * @return
+     * @throws JSONException
+     */
     public List<Place> parseResult(JSONObject object) throws JSONException {
         JSONArray jsonArray = null;
         try{

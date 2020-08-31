@@ -11,6 +11,7 @@ public class Place implements Serializable {
     private Double lat;
     private Double lng;
 
+    // Place constructor
     public Place(String name, String place_id, String address, String rating, String photo, double lat, double lng){
         this.name = name;
         this.place_id = place_id;

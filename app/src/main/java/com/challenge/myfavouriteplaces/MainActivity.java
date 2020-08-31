@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,12 +45,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     // Initialize variable
+    final private String GOOGLE_API_KEY = BuildConfig.GOOGLE_MAP_API_KEY;
     final private String ENDPOINT_NEARBY_SEARCH = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private LottieAnimationView animation;
     private AHBottomNavigation bottomNavigation;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         animation = findViewById(R.id.animationView);
         animation.playAnimation();
 
+        // BottomNavigation set action
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Search places
         imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     String url = ENDPOINT_NEARBY_SEARCH + "?location=" + currentLat + "," + currentLong
                             + "&radius=5000"
                             + "&keyword=" + editText.getText()
-                            + "&key=" + getResources().getString(R.string.google_map_key);
+                            + "&key=" + GOOGLE_API_KEY;
 
                     editText.setText("");
 
@@ -134,8 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "Please enter a word", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
     }
@@ -178,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 44){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 getCurrentLocation();;
+            } else {
+                this.finishAffinity();
             }
         }
     }
@@ -255,6 +258,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * @description Add markers on the Map and set their action
+     * @param googleMap
+     * @param places
+     */
     public void onMapReady(GoogleMap googleMap, final List<Place> places){
         mMap = googleMap;
 
@@ -274,15 +283,11 @@ public class MainActivity extends AppCompatActivity {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                HashMap<String, String> dataMarker = new HashMap<>();
                 Place place = new Place();
                 String markerTitle = marker.getTitle();
-                double markerLat = 0, markerLong = 0;
 
                 for(int i=0; i<places.size(); i++){
                     String hashMapTitle = places.get(i).getName();
-                    markerLat = places.get(i).getLat();
-                    markerLong = places.get(i).getLng();
 
                     if (hashMapTitle.equalsIgnoreCase(markerTitle)){
                         place.setPlace_id(places.get(i).getPlace_id());
@@ -298,7 +303,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), PlaceDetails.class);
                 intent.putExtra("place", place);
                 startActivity(intent);
-
                 return false;
             }
         });

@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 public class PlaceDetails extends AppCompatActivity {
     // Initialize variables
+    final private String GOOGLE_API_KEY = BuildConfig.GOOGLE_MAP_API_KEY;
     final private String ENDPOINT_PHOTO = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400";
     private TextView txtName, txtAddress, txtRating;
     private ImageView imgPhoto;
@@ -82,12 +83,13 @@ public class PlaceDetails extends AppCompatActivity {
         txtRating.setText(rating);
 
         String URL = ENDPOINT_PHOTO + "&photo_reference=" + photo_reference
-                                    + "&key=" + getResources().getString(R.string.google_map_key);
+                                    + "&key=" + GOOGLE_API_KEY;
 
+        // Load image
         Picasso.get().load(URL).into(imgPhoto);
         setDetails(name, lat, lng);
 
-
+        // Save place on local database
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,6 +114,7 @@ public class PlaceDetails extends AppCompatActivity {
             }
         });
 
+        // Delete place from local database
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,6 +135,7 @@ public class PlaceDetails extends AppCompatActivity {
 
         arrayListPlaces = databaseHandler.getPlaceByIDPlace(place_id);
 
+        // Define active button
         if (!arrayListPlaces.isEmpty()){
             btnSave.setVisibility(View.INVISIBLE);
             btnDelete.setVisibility(View.VISIBLE);

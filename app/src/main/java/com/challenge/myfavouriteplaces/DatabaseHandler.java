@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    // Initialize DB Name and tables
+    // Initialize DB Name and table
     private static final String DATABASE_NAME = "favourite_places";
     private static final String TABLE_NAME = "places";
 
@@ -26,13 +26,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(createTable);
     }
 
+
+    /**
+     * @description Drop older table if exist
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        // Drop older table if exist
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 
+    /**
+     * @description Add new place in table
+     * @param place
+     * @return
+     */
     public boolean addPlace(Place place){
         // Get data from DB and insert data in table
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -53,6 +61,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
+
+    /**
+     * @description Get all places from table
+     * @return
+     */
     public ArrayList getAllPlaces(){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         ArrayList<Place> arrayPlaces = new ArrayList<>();
@@ -75,6 +88,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return arrayPlaces;
     }
 
+
+    /**
+     * @description Get place by place_id
+     * @param place_id
+     * @return
+     */
     public ArrayList getPlaceByIDPlace(String place_id){
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         ArrayList<Place> arrayPlaces = new ArrayList<>();
@@ -96,6 +115,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return arrayPlaces;
     }
 
+
+    /**
+     * @description Delete place by ID
+     * @param place_id
+     */
     public void deletePlaceByPlaceID(String place_id){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         sqLiteDatabase.execSQL("DELETE FROM " + TABLE_NAME + " WHERE place_id = '"  + place_id + "'");
