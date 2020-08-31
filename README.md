@@ -2,7 +2,7 @@
 
 ## How to run application
 
-Add the following variable with its corresponding value:
+Add the following variable with its corresponding value on 'gradle.properties' file:
 
 ```
 GOOGLE_MAP_API_KEY = YOUR_API_KEY
